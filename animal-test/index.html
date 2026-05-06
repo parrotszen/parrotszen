@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 어떤 동물일까?</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,sans-serif;background:#FFF8F0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 60px}
+h1{font-size:1.8rem;text-align:center;margin-bottom:6px;color:#2d2d2d}
+.sub{color:#888;font-size:.9rem;text-align:center;margin-bottom:28px}
+.pw{width:100%;max-width:540px;margin-bottom:20px}
+.pl{font-size:.8rem;color:#888;margin-bottom:5px}
+.pb{height:8px;background:#e9ecef;border-radius:99px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,#FFA94D,#FF6B6B);border-radius:99px;transition:width .4s}
+.card{background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.1);max-width:540px;width:100%;padding:32px 24px 28px}
+.qn{font-size:.8rem;color:#FF6B6B;font-weight:700;margin-bottom:8px}
+.qt{font-size:1.2rem;font-weight:700;color:#2d2d2d;line-height:1.5;margin-bottom:24px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.ob{background:#f8f9fa;border:2px solid transparent;border-radius:12px;padding:14px 16px;font-size:.95rem;color:#2d2d2d;cursor:pointer;text-align:left;transition:all .15s;width:100%}
+.ob:hover{border-color:#FFA94D}
+.ob.sel{border-color:#FF6B6B;background:#fff0f0;font-weight:700}
+.nr{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px}
+.bb{background:none;border:2px solid #e9ecef;border-radius:10px;padding:10px 20px;font-size:.9rem;color:#888;cursor:pointer}
+.bn{background:linear-gradient(135deg,#FFA94D,#FF6B6B);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:.95rem;font-weight:700;cursor:pointer;flex:1}
+.bn:disabled{opacity:.4;cursor:not-allowed}
+.ic{background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.1);max-width:540px;width:100%;padding:40px 24px;text-align:center}
+.ie{font-size:3rem;margin-bottom:16px}
+.it{font-size:1.6rem;font-weight:700;color:#2d2d2d;margin-bottom:10px}
+.id{color:#888;font-size:.9rem;line-height:1.7;margin-bottom:28px}
+.bs{background:linear-gradient(135deg,#FFA94D,#FF6B6B);color:#fff;border:none;border-radius:12px;padding:15px 40px;font-size:1rem;font-weight:700;cursor:pointer;width:100%;max-width:280px}
+.rc{background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.1);max-width:540px;width:100%;padding:36px 24px;text-align:center}
+.re{font-size:5rem;display:block;margin-bottom:10px}
+.rl{font-size:.8rem;color:#FF6B6B;font-weight:700;letter-spacing:2px;margin-bottom:4px}
+.rt{font-size:1.8rem;font-weight:700;color:#2d2d2d;margin-bottom:6px}
+.rs{color:#888;font-size:.9rem;margin-bottom:16px}
+.rtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:18px}
+.tag{background:#fff3e0;color:#FFA94D;border-radius:99px;padding:4px 12px;font-size:.82rem;font-weight:700}
+.rd{color:#555;font-size:.92rem;line-height:1.7;margin-bottom:24px;background:#f8f9fa;border-radius:12px;padding:16px;text-align:left}
+.rf h3{font-size:.95rem;font-weight:700;margin-bottom:10px}
+.fr{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.fc{background:#f0fff4;border:2px solid #69DB7C;border-radius:99px;padding:6px 16px;font-size:.85rem;color:#2f9e44;font-weight:700}
+.br{background:linear-gradient(135deg,#74c0fc,#4dabf7);color:#fff;border:none;border-radius:12px;padding:14px 36px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;max-width:260px}
+</style>
+</head>
+<body>
+<h1>🐾 나는 어떤 동물?</h1>
+<p class="sub">12가지 질문으로 알아보는 나의 동물 유형</p>
+<div id="app"></div>
+<script>
+var Q=[
+{t:"주말 오전, 눈을 떴다. 나는?",o:[
+{t:"🛏️ 이불 속에서 한 시간은 더 뒹군다",s:{lion:0,fox:1,otter:0,owl:1,bear:2,cat:2,wolf:0,rabbit:0}},
+{t:"☀️ 일어나자마자 오늘 뭐할지 계획 짠다",s:{lion:2,fox:2,otter:1,owl:2,bear:0,cat:0,wolf:1,rabbit:1}},
+{t:"📱 폰 들고 유튜브 보다가 자연스럽게 일어난다",s:{lion:0,fox:1,otter:2,owl:0,bear:1,cat:2,wolf:0,rabbit:2}},
+{t:"🏃 아침 운동하러 나간다",s:{lion:2,fox:0,otter:2,owl:0,bear:0,cat:0,wolf:2,rabbit:1}}]},
+{t:"단톡방에 갑자기 번개 모임이 뜨면?",o:[
+{t:"🎉 '나 간다!' 바로 답장",s:{lion:1,fox:2,otter:2,owl:0,bear:0,cat:0,wolf:1,rabbit:2}},
+{t:"📅 일정 확인하고 조용히 합류",s:{lion:1,fox:1,otter:1,owl:2,bear:1,cat:1,wolf:1,rabbit:1}},
+{t:"🙈 읽씹하고 당일에 갑자기 일이...",s:{lion:0,fox:0,otter:0,owl:1,bear:2,cat:2,wolf:0,rabbit:0}},
+{t:"🤷 분위기 봐서 전날쯤 결정한다",s:{lion:0,fox:1,otter:1,owl:1,bear:1,cat:2,wolf:0,rabbit:1}}]},
+{t:"팀 프로젝트에서 내 역할은?",o:[
+{t:"👑 자연스럽게 방향 잡고 이끄는 사람",s:{lion:2,fox:1,otter:0,owl:1,bear:0,cat:0,wolf:2,rabbit:0}},
+{t:"💡 아이디어 뿜뿜, 근데 실행은 남한테",s:{lion:0,fox:2,otter:2,owl:1,bear:0,cat:1,wolf:0,rabbit:1}},
+{t:"📝 꼼꼼히 정리하고 마무리하는 사람",s:{lion:1,fox:0,otter:0,owl:2,bear:1,cat:0,wolf:0,rabbit:2}},
+{t:"🤝 분위기 살리고 갈등 중재하는 사람",s:{lion:0,fox:1,otter:1,owl:0,bear:2,cat:1,wolf:1,rabbit:1}}]},
+{t:"친구가 고민 상담을 털어놓는다. 나의 반응은?",o:[
+{t:"🧠 해결책 바로 제시",s:{lion:2,fox:2,otter:0,owl:2,bear:0,cat:0,wolf:1,rabbit:0}},
+{t:"🫂 일단 다 들어주고 공감부터",s:{lion:0,fox:0,otter:1,owl:0,bear:2,cat:1,wolf:1,rabbit:2}},
+{t:"😄 분위기 전환용 드립 한 방",s:{lion:0,fox:1,otter:2,owl:0,bear:1,cat:2,wolf:0,rabbit:1}},
+{t:"🤔 진지하게 같이 고민하고 분석",s:{lion:1,fox:1,otter:0,owl:2,bear:1,cat:0,wolf:2,rabbit:0}}]},
+{t:"나의 SNS 스타일은?",o:[
+{t:"📸 자주 올리고 반응도 잘 달아줌",s:{lion:1,fox:2,otter:2,owl:0,bear:0,cat:0,wolf:0,rabbit:2}},
+{t:"👀 남 피드만 구경하는 스텔스 모드",s:{lion:0,fox:0,otter:0,owl:2,bear:2,cat:2,wolf:1,rabbit:0}},
+{t:"🧐 가끔 올리는데 퀄리티에 신경 씀",s:{lion:2,fox:1,otter:0,owl:1,bear:0,cat:1,wolf:2,rabbit:1}},
+{t:"😅 계정은 있는데 마지막 게시물이 2년 전",s:{lion:0,fox:0,otter:1,owl:1,bear:2,cat:1,wolf:1,rabbit:0}}]},
+{t:"처음 가는 식당 메뉴판을 봤을 때?",o:[
+{t:"🍖 항상 먹던 거 바로 주문",s:{lion:2,fox:1,otter:0,owl:0,bear:2,cat:1,wolf:1,rabbit:0}},
+{t:"📊 후기 찾아보고 베스트 메뉴로",s:{lion:0,fox:1,otter:0,owl:2,bear:0,cat:0,wolf:1,rabbit:2}},
+{t:"🎲 랜덤으로 골라봄, 인생은 도전!",s:{lion:1,fox:2,otter:2,owl:0,bear:0,cat:2,wolf:0,rabbit:1}},
+{t:"😤 5분 넘게 고민하다가 눈치 보며 주문",s:{lion:0,fox:0,otter:1,owl:1,bear:1,cat:0,wolf:0,rabbit:2}}]},
+{t:"스트레스 받을 때 나의 해소법은?",o:[
+{t:"🏋️ 운동이나 액티비티로 발산",s:{lion:2,fox:0,otter:2,owl:0,bear:0,cat:0,wolf:2,rabbit:0}},
+{t:"🛋️ 혼자 방에서 조용히 쉼",s:{lion:0,fox:0,otter:0,owl:2,bear:2,cat:2,wolf:1,rabbit:1}},
+{t:"🍻 친구 불러서 떠들면서 풀기",s:{lion:1,fox:2,otter:2,owl:0,bear:0,cat:0,wolf:0,rabbit:2}},
+{t:"🎵 음악 들으면서 감성에 빠지기",s:{lion:0,fox:1,otter:1,owl:1,bear:1,cat:2,wolf:1,rabbit:1}}]},
+{t:"나의 결정 스타일은?",o:[
+{t:"⚡ 직감으로 빠르게",s:{lion:2,fox:2,otter:2,owl:0,bear:0,cat:2,wolf:1,rabbit:0}},
+{t:"📋 장단점 리스트 쓰고 분석",s:{lion:0,fox:1,otter:0,owl:2,bear:1,cat:0,wolf:1,rabbit:1}},
+{t:"👥 주변 사람들 의견 많이 물어봄",s:{lion:0,fox:0,otter:1,owl:0,bear:2,cat:0,wolf:0,rabbit:2}},
+{t:"🌀 계속 미루다가 마감 직전에 결정",s:{lion:0,fox:0,otter:1,owl:1,bear:1,cat:1,wolf:0,rabbit:1}}]},
+{t:"갑자기 돈이 생겼다! 나는?",o:[
+{t:"✈️ 여행 or 경험에 투자",s:{lion:1,fox:2,otter:2,owl:0,bear:1,cat:0,wolf:0,rabbit:1}},
+{t:"💰 저축 or 투자",s:{lion:1,fox:1,otter:0,owl:2,bear:0,cat:0,wolf:2,rabbit:1}},
+{t:"🛍️ 갖고 싶었던 거 바로 질러버림",s:{lion:2,fox:1,otter:1,owl:0,bear:2,cat:2,wolf:0,rabbit:0}},
+{t:"🍽️ 친구들한테 밥 사줌",s:{lion:0,fox:0,otter:2,owl:0,bear:1,cat:0,wolf:1,rabbit:2}}]},
+{t:"모임에서 대화할 때 나는?",o:[
+{t:"🎤 내가 분위기 주도하고 말 많이 함",s:{lion:2,fox:2,otter:2,owl:0,bear:0,cat:0,wolf:1,rabbit:0}},
+{t:"🎯 핵심만 딱 말하고 조용히 있음",s:{lion:1,fox:0,otter:0,owl:2,bear:0,cat:2,wolf:2,rabbit:0}},
+{t:"😌 리액션 담당, 잘 들어줌",s:{lion:0,fox:0,otter:1,owl:1,bear:2,cat:1,wolf:0,rabbit:2}},
+{t:"🎭 상황에 따라 다름, 카멜레온형",s:{lion:0,fox:2,otter:1,owl:1,bear:1,cat:1,wolf:1,rabbit:1}}]},
+{t:"내가 화가 났을 때 나는?",o:[
+{t:"🔥 바로 표현함, 속에 안 담아둠",s:{lion:2,fox:1,otter:1,owl:0,bear:0,cat:0,wolf:2,rabbit:0}},
+{t:"🧊 표정 굳어지고 말 없어짐",s:{lion:0,fox:0,otter:0,owl:1,bear:1,cat:2,wolf:2,rabbit:0}},
+{t:"😢 혼자 속으로 삭힘",s:{lion:0,fox:0,otter:0,owl:2,bear:2,cat:1,wolf:0,rabbit:2}},
+{t:"😅 웃으면서 괜찮아요 하는데 사실 안 괜찮음",s:{lion:0,fox:1,otter:2,owl:0,bear:1,cat:0,wolf:0,rabbit:2}}]},
+{t:"나에게 가장 중요한 가치는?",o:[
+{t:"🏆 성취와 목표",s:{lion:2,fox:1,otter:0,owl:2,bear:0,cat:0,wolf:2,rabbit:0}},
+{t:"💕 관계와 사람",s:{lion:0,fox:1,otter:2,owl:0,bear:2,cat:0,wolf:0,rabbit:2}},
+{t:"🕊️ 자유와 재미",s:{lion:1,fox:2,otter:2,owl:0,bear:1,cat:2,wolf:0,rabbit:1}},
+{t:"🔐 안정과 신뢰",s:{lion:0,fox:0,otter:0,owl:2,bear:1,cat:1,wolf:2,rabbit:1}}]}
+];
+var A={
+lion:{name:"🦁 사자형",emoji:"🦁",sub:"타고난 리더, 자신감의 화신",tags:["리더십","카리스마","결단력","독립적"],desc:"어디서든 자연스럽게 주목받고 주도적으로 이끄는 타입이에요. 목표가 생기면 거침없이 돌진하고, 강한 의지로 주변에 영향을 줘요. 믿고 따를 수 있는 든든한 존재랍니다.",friends:["🦊 여우형","🐺 늑대형"]},
+fox:{name:"🦊 여우형",emoji:"🦊",sub:"눈치 백단, 전략의 귀재",tags:["영리함","센스","적응력","매력"],desc:"어떤 상황에서도 기민하게 적응하고 눈치 하나는 천재 수준이에요. 분위기를 읽고 최적의 선택을 하는 능력이 탁월해요. 창의적이고 재치 있어서 대화할 때도 항상 흥미로워요.",friends:["🦁 사자형","🦦 수달형"]},
+otter:{name:"🦦 수달형",emoji:"🦦",sub:"에너지 폭탄, 무드메이커",tags:["활발함","긍정적","사교적","유머"],desc:"있는 곳마다 에너지를 뿜어내는 당신! 모임 분위기를 살리는 건 바로 당신이에요. 새로운 사람, 새로운 경험을 두려워하지 않아요. 그 에너지가 주변 사람들에게 활력이 돼요.",friends:["🦊 여우형","🐻 곰형"]},
+owl:{name:"🦉 올빼미형",emoji:"🦉",sub:"깊이 있는 관찰자, 지식의 보고",tags:["분석적","신중함","지적","독립적"],desc:"겉으로는 조용해 보이지만 머릿속에서는 엄청난 분석이 돌아가고 있어요. 말 한 마디도 근거가 있고 충분히 생각하고 움직여요. 혼자만의 시간을 소중히 여기고 깊은 대화를 좋아해요.",friends:["🐺 늑대형","🐱 고양이형"]},
+bear:{name:"🐻 곰형",emoji:"🐻",sub:"포근한 안정감, 모두의 버팀목",tags:["따뜻함","신뢰감","여유","배려"],desc:"묵직하고 포근한 당신은 주변 사람들에게 든든한 안정감을 줘요. 여유 있게 상황을 바라보며 진심으로 사람들을 챙겨요. 당신 옆에 있으면 마음이 편해져요.",friends:["🦦 수달형","🐰 토끼형"]},
+cat:{name:"🐱 고양이형",emoji:"🐱",sub:"자유로운 영혼, 나만의 세계",tags:["독립적","개성","감성적","자유로움"],desc:"나만의 페이스와 세계가 확실한 당신! 남의 시선보다 자신이 좋아하는 것을 중요하게 여겨요. 한 번 친해지면 누구보다 애정이 깊어요. 감수성이 풍부하고 취향이 확실해요.",friends:["🦉 올빼미형","🦊 여우형"]},
+wolf:{name:"🐺 늑대형",emoji:"🐺",sub:"강인한 고독, 신뢰의 파수꾼",tags:["충성심","강인함","원칙주의","전략적"],desc:"혼자서도 강하지만 믿는 사람에게는 절대적인 충성을 보여줘요. 원칙과 신념이 뚜렷하고 목표를 정하면 끝까지 해내는 집념이 있어요. 진심으로 친해지면 절대 배신하지 않아요.",friends:["🦁 사자형","🦉 올빼미형"]},
+rabbit:{name:"🐰 토끼형",emoji:"🐰",sub:"공감 능력 만렙, 모두의 친구",tags:["공감능력","친절함","섬세함","성실"],desc:"누구보다 상대방의 마음을 잘 읽고 세심하게 배려해요. 친화력이 좋아서 어디서든 금방 친해지고 남을 불편하게 하는 걸 싫어해요. 주변 사람들에게 항상 필요한 존재랍니다.",friends:["🐻 곰형","🦦 수달형"]}
+};
+var st={scr:'intro',q:0,ans:[],sc:{lion:0,fox:0,otter:0,owl:0,bear:0,cat:0,wolf:0,rabbit:0}};
+function getBest(){var b='lion',m=0;Object.keys(st.sc).forEach(function(k){if(st.sc[k]>m){m=st.sc[k];b=k;}});return b;}
+function render(){
+var app=document.getElementById('app');
+if(st.scr==='intro'){
+app.innerHTML='<div class="ic"><div class="ie">🦁🦊🐻🦉</div><div class="it">나는 어떤 동물 유형일까?</div><p class="id">8가지 동물 유형 중 나와 꼭 닮은 동물은 누구?<br>솔직하게 답할수록 정확해요! 🐾</p><button class="bs" onclick="start()">테스트 시작하기 →</button></div>';
+}else if(st.scr==='quiz'){
+var q=Q[st.q];var sel=st.ans[st.q]!==undefined?st.ans[st.q]:-1;
+var pct=Math.round((st.q/Q.length)*100);
+var opts='';for(var i=0;i<q.o.length;i++){opts+='<button class="ob'+(sel===i?' sel':'')+'" onclick="pick('+i+')">'+q.o[i].t+'</button>';}
+var back=st.q>0?'<button class="bb" onclick="back()">← 이전</button>':'<div></div>';
+var nl=st.q<Q.length-1?'다음 →':'결과 보기 🎉';
+app.innerHTML='<div class="pw"><div class="pl">'+(st.q+1)+' / '+Q.length+'</div><div class="pb"><div class="pf" style="width:'+pct+'%"></div></div></div><div class="card"><div class="qn">Q'+(st.q+1)+'</div><div class="qt">'+q.t+'</div><div class="opts">'+opts+'</div><div class="nr">'+back+'<button class="bn" onclick="next()"'+(sel===-1?' disabled':'')+'>'+nl+'</button></div></div>';
+}else{
+var k=getBest();var a=A[k];
+var tags=a.tags.map(function(t){return'<span class="tag">#'+t+'</span>';}).join('');
+var fr=a.friends.map(function(f){return'<span class="fc">'+f+'</span>';}).join('');
+app.innerHTML='<div class="rc"><span class="re">'+a.emoji+'</span><div class="rl">당신의 동물 유형</div><div class="rt">'+a.name+'</div><div class="rs">'+a.sub+'</div><div class="rtags">'+tags+'</div><div class="rd">'+a.desc+'</div><div class="rf"><h3>✨ 잘 맞는 유형</h3><div class="fr">'+fr+'</div></div><button class="br" onclick="restart()">🔄 다시 테스트하기</button></div>';
+}}
+function start(){st.scr='quiz';st.q=0;render();}
+function pick(i){
+var q=Q[st.q];
+if(st.ans[st.q]!==undefined){var p=q.o[st.ans[st.q]].s;Object.keys(p).forEach(function(k){st.sc[k]-=p[k];});}
+var c=q.o[i].s;Object.keys(c).forEach(function(k){st.sc[k]+=c[k];});
+st.ans[st.q]=i;render();
+}
+function next(){if(st.ans[st.q]===undefined)return;if(st.q<Q.length-1){st.q++;render();}else{st.scr='result';render();}}
+function back(){if(st.q>0){st.q--;render();}}
+function restart(){st={scr:'intro',q:0,ans:[],sc:{lion:0,fox:0,otter:0,owl:0,bear:0,cat:0,wolf:0,rabbit:0}};render();}
+render();
+</script>
+</body>
+</html>
