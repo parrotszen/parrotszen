@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포지션 계산기</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: #2a2a2a;
+    --accent: #c8f135;
+    --accent2: #ff4d4d;
+    --text: #f0f0f0;
+    --muted: #666;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+  }
+  .header { margin-bottom: 20px; }
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .currency-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .currency-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .currency-toggle {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .cur-btn {
+    padding: 6px 16px;
+    border-radius: 5px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+    user-select: none;
+    letter-spacing: 1px;
+  }
+  .cur-btn.active { background: var(--accent); color: #000; }
+  .rate-field { margin-bottom: 18px; display: none; }
+  .rate-field.show { display: block; }
+  .tabs {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+    gap: 4px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 7px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab.active { background: var(--accent); color: #000; font-weight: 700; }
+  .field { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-family: 'Space Mono', monospace;
+  }
+  .input-wrap { position: relative; }
+  input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  input.has-unit { padding-right: 56px; }
+  input:focus { border-color: var(--accent); }
+  input::placeholder { color: #333; }
+  .unit {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .error-msg {
+    font-size: 12px;
+    color: var(--accent2);
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+  .result-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .result-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+  }
+  .result-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .result-value.big { font-size: 24px; color: var(--accent); }
+  .leverage-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .lev-safe   { background: rgba(200,241,53,0.12); color: var(--accent); }
+  .lev-warn   { background: rgba(255,149,0,0.12);  color: #ff9500; }
+  .lev-danger { background: rgba(255,77,77,0.12);  color: var(--accent2); }
+  .empty-state {
+    text-align: center;
+    color: #333;
+    font-size: 13px;
+    padding: 16px 0;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="tag">Position Sizer</div>
+    <h1>포지션 계산기</h1>
+  </div>
+  <div class="currency-row">
+    <span class="currency-label">통화</span>
+    <div class="currency-toggle">
+      <div class="cur-btn active" id="cur-usd" onclick="setCurrency('usd')">USD</div>
+      <div class="cur-btn" id="cur-krw" onclick="setCurrency('krw')">KRW</div>
+    </div>
+  </div>
+  <div class="rate-field" id="rate-field">
+    <div class="field">
+      <label>환율 (₩/$)</label>
+      <div class="input-wrap">
+        <input type="number" id="exchange-rate" placeholder="1380" step="any" inputmode="decimal" class="has-unit">
+        <span class="unit">₩/$</span>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" id="tab-price" onclick="switchTab('price')">가격으로 입력</div>
+    <div class="tab" id="tab-pct" onclick="switchTab('pct')">손절폭 % 입력</div>
+  </div>
+  <div id="mode-price">
+    <div class="field">
+      <label>진입가</label>
+      <div class="input-wrap">
+        <input type="number" id="p-entry" placeholder="0.00" step="any" inputmode="decimal">
+      </div>
+    </div>
+    <div class="field">
+      <label>손절가</label>
+      <div class="input-wrap">
+        <input type="number" id="p-stop" placeholder="0.00" step="any" inputmode="decimal">
+      </div>
+      <div id="p-stopError" class="error-msg" style="display:none">손절가는 진입가보다 낮아야 합니다</div>
+    </div>
+  </div>
+  <div id="mode-pct" style="display:none">
+    <div class="field">
+      <label>손절폭 (%)</label>
+      <div class="input-wrap">
+        <input type="number" id="pct-stop" placeholder="예) 2.5" step="any" inputmode="decimal" class="has-unit">
+        <span class="unit">%</span>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label>시드 (<span class="cur-unit-label">$</span>)</label>
+    <div class="input-wrap">
+      <input type="number" id="seed" placeholder="0" step="any" inputmode="decimal" class="has-unit">
+      <span class="unit cur-unit-sym">$</span>
+    </div>
+  </div>
+  <div class="field">
+    <label>잃을 금액 (<span class="cur-unit-label">$</span>)</label>
+    <div class="input-wrap">
+      <input type="number" id="risk" placeholder="0" step="any" inputmode="decimal" class="has-unit">
+      <span class="unit cur-unit-sym">$</span>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="result-box" id="resultBox">
+    <div class="empty-state">값을 입력하면<br>자동으로 계산됩니다</div>
+  </div>
+</div>
+<script>
+  let currentTab = 'price';
+  let currentCurrency = 'usd';
+  function setCurrency(cur) {
+    currentCurrency = cur;
+    document.getElementById('cur-usd').classList.toggle('active', cur === 'usd');
+    document.getElementById('cur-krw').classList.toggle('active', cur === 'krw');
+    document.getElementById('rate-field').classList.toggle('show', cur === 'krw');
+    const sym = cur === 'usd' ? '$' : '₩';
+    document.querySelectorAll('.cur-unit-sym').forEach(el => el.textContent = sym);
+    document.querySelectorAll('.cur-unit-label').forEach(el => el.textContent = sym);
+    calculate();
+  }
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-price').classList.toggle('active', tab === 'price');
+    document.getElementById('tab-pct').classList.toggle('active', tab === 'pct');
+    document.getElementById('mode-price').style.display = tab === 'price' ? '' : 'none';
+    document.getElementById('mode-pct').style.display  = tab === 'pct'   ? '' : 'none';
+    calculate();
+  }
+  ['p-entry','p-stop','pct-stop','seed','risk','exchange-rate'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calculate);
+  });
+  function fmt(val, cur) {
+    if (cur === 'krw') return '₩' + Math.round(val).toLocaleString('ko-KR');
+    return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function calculate() {
+    const seed = parseFloat(document.getElementById('seed').value);
+    const risk = parseFloat(document.getElementById('risk').value);
+    const box  = document.getElementById('resultBox');
+    const isKRW = currentCurrency === 'krw';
+    const rate = parseFloat(document.getElementById('exchange-rate').value) || 0;
+    let stopPct;
+    if (currentTab === 'price') {
+      const entry = parseFloat(document.getElementById('p-entry').value);
+      const stop  = parseFloat(document.getElementById('p-stop').value);
+      const errEl = document.getElementById('p-stopError');
+      if (!isNaN(entry) && !isNaN(stop) && stop >= entry) {
+        errEl.style.display = 'block';
+      } else {
+        errEl.style.display = 'none';
+      }
+      if (isNaN(entry) || isNaN(stop) || entry <= 0 || stop <= 0 || stop >= entry) {
+        box.innerHTML = '<div class="empty-state">값을 입력하면<br>자동으로 계산됩니다</div>';
+        return;
+      }
+      stopPct = (entry - stop) / entry;
+    } else {
+      const pct = parseFloat(document.getElementById('pct-stop').value);
+      if (isNaN(pct) || pct <= 0 || pct >= 100) {
+        box.innerHTML = '<div class="empty-state">값을 입력하면<br>자동으로 계산됩니다</div>';
+        return;
+      }
+      stopPct = pct / 100;
+    }
+    if (isNaN(risk) || risk <= 0) {
+      box.innerHTML = '<div class="empty-state">값을 입력하면<br>자동으로 계산됩니다</div>';
+      return;
+    }
+    const positionSize = risk / stopPct;
+    const leverage = (!isNaN(seed) && seed > 0) ? positionSize / seed : null;
+    let convertHTML = '';
+    if (isKRW && rate > 0) {
+      const posUSD = positionSize / rate;
+      convertHTML = `
+        <div class="result-row" style="opacity:0.6">
+          <span class="result-label">≈ USD 환산</span>
+          <span class="result-value" style="font-size:13px">$${posUSD.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        </div>`;
+    }
+    let leverageHTML = '';
+    if (leverage !== null) {
+      let cls = 'lev-safe', label = '안전';
+      if (leverage > 5)      { cls = 'lev-danger'; label = '고위험'; }
+      else if (leverage > 2) { cls = 'lev-warn';   label = '주의'; }
+      leverageHTML = `
+        <div class="result-row">
+          <span class="result-label">레버리지</span>
+          <span class="leverage-badge ${cls}">${leverage.toFixed(2)}x &nbsp;${label}</span>
+        </div>`;
+    }
+    const lossStr = isKRW ? `-₩${Math.round(risk).toLocaleString('ko-KR')}` : `-$${risk.toFixed(2)}`;
+    box.innerHTML = `
+      <div class="result-row">
+        <span class="result-label">진입금액</span>
+        <span class="result-value big">${fmt(positionSize, currentCurrency)}</span>
+      </div>
+      ${convertHTML}
+      <div class="result-row">
+        <span class="result-label">손절폭</span>
+        <span class="result-value">${(stopPct*100).toFixed(3)}%</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">최대 손실</span>
+        <span class="result-value" style="color:var(--accent2)">${lossStr}</span>
+      </div>
+      ${leverageHTML}
+    `;
+  }
+</script>
+</body>
+</html>
