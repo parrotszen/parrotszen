@@ -1,5 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/animal-test", "destination": "/animal-test/index.html" }
-  ]
-}
